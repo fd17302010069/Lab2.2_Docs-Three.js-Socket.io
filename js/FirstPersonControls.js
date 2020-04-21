@@ -30,11 +30,13 @@ class FirstPersonControls {
         this.moveRight = false;
     }
 
+    //鼠标点击时切换控制状态
     onPointerlockChange() {
         console.log(this.domElement);
         this.isLocked = document.pointerLockElement === this.domElement;
     }
 
+    //判断浏览器是否能使用该API
     onPointerlockError() {
         console.error('THREE.PointerLockControls: Unable to use Pointer Lock API');
     }
@@ -47,6 +49,8 @@ class FirstPersonControls {
             this.yawObject.rotation.y -= movementX * 0.002;
             this.pitchObject.rotation.x -= movementY * 0.002;
             // 这一步的目的是什么
+            // 若删去这一步，则相机在水平轴上可以无限制旋转，产生“空翻”的效果（鼠标一直向上或向下）
+            // 影响实际体验，所以需要将x的旋转角度限制在[-PI/2,PI/2]
             this.pitchObject.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.pitchObject.rotation.x));
         }
     }
@@ -112,6 +116,8 @@ class FirstPersonControls {
     connect() {
         this.domElement.addEventListener('click', this.domElement.requestPointerLock);
         // 在函数后面添加bind(this)的目的是什么
+        // 不设置bind时，默认情况下，事件处理函数内的this指向的是调用addEventListener的对象（产生事件的对象），即document
+        // 设置bind后，this会指向被bind的对象，即FirstPersonControls对象
         document.addEventListener('pointerlockchange', this.onPointerlockChange.bind(this), false);
         document.addEventListener('pointerlockerror', this.onPointerlockError.bind(this), false);
         document.addEventListener('mousemove', this.onMouseMove.bind(this), false);
