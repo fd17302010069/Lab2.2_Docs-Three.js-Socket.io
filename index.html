@@ -111,10 +111,17 @@
         var modelDiv = document.createElement('div');
         modelDiv.className = "label";
         modelDiv.textContent = text+"";
+        modelDiv.id = text+"";
         modelDiv.style.marginTop = "-1em";
         var modelLabel = new THREE.CSS2DObject(modelDiv);
         modelLabel.position.set(0,2,0);
         model.add(modelLabel);
+    }
+
+    //删除模型时移除相应标签
+    function deleteLabel(id) {
+        var label = document.getElementById(id);
+        label.parentNode.removeChild(label);
     }
 
     //更新其他客户端的实时信息
@@ -144,7 +151,8 @@
     socket.on('offline', data => {
         if (playerMap.has(data.socketid)) {
             scene.remove(playerMap.get(data.socketid));
-            playerMap.delete(data.socketid)
+            playerMap.delete(data.socketid);
+            deleteLabel(data.socketid);
         }
     });
 
